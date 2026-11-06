@@ -1,0 +1,152 @@
+{
+  "variable": [
+    {
+      "value": "http://localhost:3000",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "name": "Task API completed filter"
+  },
+  "item": [
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(200)); ",
+              "pm.test('Returns an array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+              "pm.collectionVariables.set('allTasks', JSON.stringify(pm.response.json())); pm.test('Both statuses represented', () => { const tasks = pm.response.json(); pm.expect(tasks.some(t => t.completed === true)).to.eql(true); pm.expect(tasks.some(t => t.completed === false)).to.eql(true); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks"
+      },
+      "name": "All tasks"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(200)); ",
+              "pm.test('Returns an array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+              "pm.test('Every task matches filter', () => pm.response.json().forEach(task => pm.expect(task.completed).to.eql(true)));",
+              "pm.test('Matches unfiltered results', () => { const all = JSON.parse(pm.collectionVariables.get('allTasks')); pm.expect(pm.response.json()).to.have.deep.members(all.filter(task => task.completed === true)); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed=true"
+      },
+      "name": "Completed tasks"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(200)); ",
+              "pm.test('Returns an array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+              "pm.test('Every task matches filter', () => pm.response.json().forEach(task => pm.expect(task.completed).to.eql(false)));",
+              "pm.test('Matches unfiltered results', () => { const all = JSON.parse(pm.collectionVariables.get('allTasks')); pm.expect(pm.response.json()).to.have.deep.members(all.filter(task => task.completed === false)); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed=false"
+      },
+      "name": "Incomplete tasks"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(400)); ",
+              "pm.test('Validation error details', () => { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details).to.include('completed must be true or false'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed=invalid"
+      },
+      "name": "Invalid value"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(400)); ",
+              "pm.test('Validation error details', () => { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details).to.include('completed must be true or false'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed="
+      },
+      "name": "Empty value"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(400)); ",
+              "pm.test('Validation error details', () => { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details).to.include('completed must be true or false'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed=1"
+      },
+      "name": "Numeric value"
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Expected HTTP status', () => pm.response.to.have.status(400)); ",
+              "pm.test('Validation error details', () => { const body = pm.response.json(); pm.expect(body.error).to.eql('Validation failed'); pm.expect(body.details).to.include('completed must be true or false'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tasks?completed=true&completed=false"
+      },
+      "name": "Repeated value"
+    }
+  ]
+}
