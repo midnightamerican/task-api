@@ -15,10 +15,42 @@ tags:
 paths:
   /tasks:
     get:
-      summary: List all tasks
+      summary: List tasks with an optional completion filter
+      description: Returns all tasks when completed is omitted. Accepts only the literal values true and false; other values return 400.
       tags:
         - Tasks
+      parameters:
+        - name: completed
+          in: query
+          required: false
+          description: Filter by completion status. true returns completed tasks; false returns incomplete tasks. Omit to return all tasks.
+          schema:
+            type: boolean
+          examples:
+            completed:
+              summary: Completed tasks
+              value: true
+            incomplete:
+              summary: Incomplete tasks
+              value: false
       responses:
+        '400':
+          description: Invalid completed query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: string
+              example:
+                error: Validation failed
+                details:
+                  - completed must be true or false
         '200':
           description: OK
           content:
